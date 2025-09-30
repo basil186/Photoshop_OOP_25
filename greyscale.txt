@@ -1,0 +1,36 @@
+greyscale
+
+
+#include "Image_Class.h"
+#include <iostream>
+
+
+using namespace std;
+
+int main (){
+
+    //greyscale
+Image img("luffy.jpg");
+    for (int i = 0; i < img.width; i++ ) {
+        for (int j = 0; j < img.height; j++ ) {
+            unsigned int avg = 0;
+
+            for (int k = 0; k < 3; k++) {
+
+                avg +=img(i,j,k);
+
+
+            }
+            avg /= 3;
+            for (int k = 0;k <3; ++k) {
+                img (i,j,k) = avg;
+            }
+
+        }
+    }
+   int grey = img.saveImage("luf.png");
+
+std::cout <<"hi" << std :: endl;
+
+return 0;
+}
