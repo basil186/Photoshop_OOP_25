@@ -1,0 +1,38 @@
+invert
+#include "Image_Class.h"
+#include <iostream>
+
+
+using namespace std;
+
+int main (){
+
+
+Image img("luffy.jpg");
+    for (int i = 0; i < img.width; i++ ) {
+        for (int j = 0; j < img.height; j++ ) {
+
+            unsigned int  avg =0;
+
+            for (int k = 0; k < 3; k++) {
+                avg +=img(i ,j,k);
+            }
+                avg /= 3;
+            // looping to add the 3 colors channels together then dividing them by 3 to get their average brightness
+
+
+
+
+          for (int k = 0;k <3; ++k) {
+                img (i,j,k) = 255- img (i ,j, k);
+            } // to invert the colors we need to  reverse each color intensity by 255 - color value (intensity)
+
+
+        }
+    }
+   int grey = img.saveImage("luff.png");
+
+std::cout <<"done" << std :: endl;
+
+return 0;
+}

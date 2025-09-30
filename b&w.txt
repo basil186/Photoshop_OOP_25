@@ -1,0 +1,47 @@
+b&w 
+
+#include "Image_Class.h"
+#include <iostream>
+
+
+using namespace std;
+
+int main (){
+
+
+Image img("luffy.jpg");
+    for (int i = 0; i < img.width; i++ ) {
+        for (int j = 0; j < img.height; j++ ) {
+
+            unsigned int  avg =0;
+
+            for (int k = 0; k < 3; k++) {
+                avg +=img(i ,j,k);
+            }
+                avg /= 3;
+            // looping to add the 3 colors channels together then dividing them by 3 to get their average brightness
+
+                int resultclr;
+                if (avg >= 128) {
+                    //darker colors turn to black
+                    resultclr = 255;
+                }else {
+                    //brighter colors turn to white
+                    resultclr = 0;
+                }
+
+
+
+          for (int k = 0;k <3; ++k) {
+                img (i,j,k) = resultclr;
+            }
+            //assigning each channel with its corresponding black or white color
+
+        }
+    }
+   int grey = img.saveImage("luf.png");
+
+std::cout <<"done" << std :: endl;
+
+return 0;
+}
