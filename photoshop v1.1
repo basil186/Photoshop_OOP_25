@@ -1,0 +1,63 @@
+#include <iostream>
+using namespace std;
+
+
+    class Shape {
+    private:
+        string color;
+    public:
+            Shape() {
+
+            }
+            Shape(string c) {
+                color = c;
+            }
+           void  getarea() {
+                cout << "void area" << endl;
+            }
+    };
+
+    class Square : public Shape
+    {
+     private:
+        int side;
+    public:
+       Square (){}
+       Square(string c,int s) : Shape(c){
+           side = s;
+       }
+        int getareasq(int s) {
+           return s*s;
+       }
+
+
+    };
+
+
+    class Rectangle : public Shape {
+    private:
+        int length;
+        int width;
+    public:
+        Rectangle() {
+
+        }
+        Rectangle(string c, int l,int w) :Shape(c) {
+            length = l;
+            width = w;
+
+        }
+        int getarearec(int l , int w) {
+            return l*w;
+        }
+    };
+
+int main() {
+    Shape s;
+    Square squ;
+    Rectangle r;
+
+    cout<< squ.getareasq(8)<< endl;
+    cout << r.getarearec(5,8) << endl;
+
+}
