@@ -1,63 +1,387 @@
+//Desc:
+// an image editor program that is capable of applying some filters to the given images using the attached libraries
+//it can handle process edit and save the image
+// The filters are
+//    1. Invert colors
+//    2. Darken or Lighten
+//    3. Convert to Black & White
+//    4. Convert to Grayscale
+//    5. Flip (Horizontal or Vertical)
+//    6. Rotate (90, 180, 270 degrees)
+//    students info and their filters
+//      Name:               ID:                Sec:                    Filters done:
+//Basil HossamEldin Adham   20230545           sec(x)                  (1,3,4)
+//Mohamed Abdelaziz Mohamed 20231246           sec(x)                  (2,5)
+//Hossam Anwar Alsayed      20227032           sec(x)                   (6)
+
+
+
+
+#include "Image_Class.h"
 #include <iostream>
+
 using namespace std;
 
+int main () {
+    bool continueProgram = true;
 
-    class Shape {
-    private:
-        string color;
-    public:
-            Shape() {
+
+    string filename;
+    cout << "please enter the image name with extension" <<  endl;
+    cin >> filename;
+
+    while (continueProgram) {
+        int choice;
+        cout << "Menu\n";
+        cout << "1:Invert Image\n";
+        cout << "2:Darken & Lighten Image\n";
+        cout << "3:Black & White Image\n";
+        cout << "4:convert into Grayscale Image\n";
+        cout << "5:Flip Image\n";
+        cout << "6:Rotate Image\n";
+        cout << "7:merged\n";
+        cout <<"8: crop\n";
+        cout << "9:soon\n";
+        cout << "10:exit\n";
+        cout << "Enter choice (1-10)";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                //invert
+
+                Image img(filename);
+                cout << "Image successfully loaded\n" << endl;
+
+                for (int i = 0; i < img.width; i++ ) {
+                    for (int j = 0; j < img.height; j++ ) {
+                        for (int k = 0;k <3; ++k) {
+                            img (i,j,k) = 255 - img(i,j,k);
+                        }   // to invert the colors we need to  reverse each color intensity by 255 - color value (intensity)
+                    }
+                }
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename;
+                img.saveImage(filename);
+                break;
+            }
+            case 2: {
+                //Darken & Lighten
+
+                Image img(filename);
+                cout << "Image loaded successfully" << endl;
+
+                string filterType;
+                cout << "Choose filter type ('darken' or 'lighten'): ";
+                cin >> filterType;
+
+                if (filterType == "darken") {
+                    for (int i = 0; i < img.width; i++ ) {
+                        for (int j = 0; j < img.height; j++ ) {
+                            for (int k = 0;k <3; ++k) {
+                                img(i,j,k) = min(255, img(i,j,k) / 2);
+                            }
+                        }
+                    }
+                    cout << "Image darkened by 50%" << endl;
+                } else if (filterType == "lighten") {
+                    for (int i = 0; i < img.width; i++ ) {
+                        for (int j = 0; j < img.height; j++ ) {
+                            for (int k = 0;k <3; ++k) {
+                                img(i,j,k) = min(255, img(i,j,k) * 2);
+                            }
+                        }
+                    }
+                    cout << "Image lightened by 50%" << endl;
+                } else {
+                    cerr << "Invalid filter type!" << endl;
+                    return 1;
+                }
+
+                string outputFilename;
+                cout << "Enter the output image filename with extension (.jpg, .bmp, .png, .tga): ";
+                cin >> outputFilename;
+                if (img.saveImage(outputFilename)) {
+                    cout << "Filtered image saved successfully as " << outputFilename << endl;
+                } else {
+                    cerr << "Error saving filtered image!" << endl;
+                }
+                break;
+            }
+            case 3: {
+                //B&W
+
+                Image img(filename);
+                for (int i = 0; i < img.width; i++ ) {
+                    for (int j = 0; j < img.height; j++ ) {
+                        unsigned int avg = 0;
+                        for (int k = 0; k < 3; k++) avg += img(i,j,k);
+                        avg /= 3;
+                        // looping to add the 3 colors channels together then dividing them by 3 to get their average brightness
+
+                        int resultclr;
+                        if (avg >= 128) {
+                            //darker colors turn to black
+                            resultclr = 255;
+                        }else {
+                            //brighter colors turn to white
+                            resultclr = 0;
+                        }
+
+                        for (int k = 0; k < 3; ++k) img(i,j,k) = resultclr;
+                    }
+                    //assigning each channel with its corresponding black or white color
+                }
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename;
+                img.saveImage(filename);
+                break;
+            }
+            case 4: {
+                //Grayscale
+
+                Image img(filename);
+                cout << "loaded successfully" << endl;
+
+                for (int i = 0; i < img.width; i++ ) {
+                    for (int j = 0; j < img.height; j++ ) {
+                        unsigned int avg = 0;
+                        for (int k = 0; k < 3; k++) avg += img(i,j,k);
+                        avg /= 3;
+                        // looping to add the 3 colors channels together then dividing them by 3 to get their average brightness
+                        for (int k = 0; k < 3; ++k) img(i,j,k) = avg;
+                    }
+                }
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename;
+                img.saveImage(filename);
+                break;
+            }
+            case 5: {
+                //Flip
+
+                Image img(filename);
+                cout << "Image loaded successfully" << endl;
+
+                cout << "1. Flip Horizontally \n";
+                cout << "2. Flip Vertical\n";
+                int choice;
+                cin >> choice;
+
+                Image flip(img.width, img.height);
+                switch (choice) {
+                    case 1: {
+                        for (int i = 0; i < img.width; i++ ) {
+                            for (int j = 0; j < img.height; j++ ) {
+                                for (int k = 0; k < 3; ++k) {
+                                    flip(i, j, k) = img(img.width - 1 - i, j, k);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    case 2: {
+                        for (int i = 0; i < img.width; i++ ) {
+                            for (int j = 0; j < img.height; j++ ) {
+                                for (int k = 0; k < 3; ++k) {
+                                    flip(i, j, k) = img(i, img.height - 1 - j, k);
+                                }
+                            }
+                        }
+                        break;
+                    }
+                    default:
+                        cout << "Invalid choice." << endl;
+                        break;
+                }
+                cout << "Please enter the image name to store the new image\n";
+                cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                cin >> filename;
+                flip.saveImage(filename);
+                break;
+            }
+            case 6: {
+                //Rotate
+
+                Image img(filename);
+
+                cout << "Image loaded successfully" << endl;
+
+                cout << "1. rotate 90deg\n";
+                cout << "2. rotate 180deg\n";
+                cout << "3. rotate 270deg\n";
+
+                int choice;
+                cin >> choice;
+                Image flip(img.height, img.width);
+
+                switch (choice) {
+                    case 1: {
+                        for (int i = 0; i < img.width; i++ ) {
+                            for (int j = 0; j < img.height; j++ ) {
+                                for (int k = 0; k < 3; ++k) {
+                                    flip(j, img.width - 1 - i, k) = img(i, j, k);
+                                }
+                            }
+                        }
+                        cout << "Please enter the image name to store the new image\n";
+                        cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                        cin >> filename;
+                        flip.saveImage(filename);
+                        break;
+                    }
+                    case 2: {
+                        Image f180(img.width, img.height);
+                        for (int i = 0; i < img.width; i++ ) {
+                            for (int j = 0; j < img.height; j++ ) {
+                                for (int k = 0; k < 3; ++k) {
+                                    f180(i, j, k) = img(img.width - 1 - i, img.height - 1 - j, k);
+                                }
+                            }
+                        }
+                        cout << "Please enter the image name to store the new image\n";
+                        cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                        cin >> filename;
+                        f180.saveImage(filename);
+                        break;
+                    }
+
+                    case 3: {
+                        for (int i = 0; i < img.width; i++ ) {
+                            for (int j = 0; j < img.height; j++ ) {
+                                for (int k = 0; k < 3; ++k) {
+                                    flip(img.height - 1 - j, i, k) = img(i, j, k);
+                                }
+                            }
+                        }
+                        cout << "Please enter the image name to store the new image\n";
+                        cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                        cin >> filename;
+                        flip.saveImage(filename);
+                        break;
+                    }
+                    default:
+                        cout << "Invalid choice." << endl;
+                        break;
+                }
+
+                break;
+            }
+                case 7: { // Merge
+                Image img(filename);
+                cout << "Image successfully loaded\n" << endl;
+                    string filename2;
+                    cout << "Please enter the second image name with extension: ";
+                    cin >> filename2;
+
+                    Image img2(filename2);
+                    if (img2.width == 0) {
+                        cout << "Could not load the second image.\n";
+                        break;
+                    }
+
+
+                    int width = min(img.width, img2.width);
+                    int height = min(img.height, img2.height);
+
+
+                    for (int i = 0; i < width; ++i) {
+                        for (int j = 0; j < height; ++j) {
+                            for (int k = 0; k < 3; ++k) {
+                                img(i, j, k) = (img(i, j, k) + img2(i, j, k)) / 2;
+                            }
+                        }
+                    }
+                    cout << "Merge filter applied.\n";
+                cout << "Please enter the image name to store the new image\n";
+                cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                cin >> filename;
+                img.saveImage(filename);
+                break;
+                }
+                case 8: {
+                //crop
+                Image img(filename);
+                cout << "loaded successfully" << endl;
+                int width;
+                int height;
+                cout << "Enter width for cropping:\n";
+                cin >> width;
+                cout << "Enter height for cropping:\n";
+                cin >> height;
+                int x = 1;
+                int y = 1; // assuming x and y starting positions
+                Image croppedImage(width, height);
+                for (int i = 0; i < width; ++i) {
+                    for (int j = 0; j < height; ++j) {
+                        for (int k = 0; k < 3; ++k) {
+                            croppedImage(i, j, k) = img(x + i, y + j, k);
+
+                        }
+
+                    }
+                }
+                cout << "Pls enter image name to store new image\n";
+                cout << "and specify extension .jpg, .bmp, .png, .tga: ";
+                cin >> filename;
+
+                int z = croppedImage.saveImage(filename);
+                cout << "Cropped image saved successfully." << endl;
+                cout << z;
+                break;
+
 
             }
-            Shape(string c) {
-                color = c;
+            case 9: {
+                Image img(filename);
+                cout << "Loaded successfully." << endl;
+                 int fr(img.width, img.height);
+
+                Image frame(img.width,img.height);
+                for (int i = 0; i < img.width; i++) {
+                    for (int j = 0; j < img.height; j++) {
+                        for (int k = 0; k < 3; ++k) {
+                            frame(i , j ,k) = fr min(img.width, img.height(i+150,j +150,k));
+                        };
+
+
+                    }
+                }
+                cout << "Please enter the image name to store the new image\n";
+                cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                cin >> filename;
+                frame.saveImage(filename);
+                break;
             }
-           void  getarea() {
-                cout << "void area" << endl;
+            case 10: {
+                Image img(filename);
+                cout << "loaded successfully" << endl;
+
+                for (int i = 0; i < img.width; i++ ) {
+                    for (int j = 0; j < img.height; j++ ) {
+                        unsigned int avg = 0;
+                        for (int k = 0; k < 3; k++) avg += img(i,j,k);
+                        avg /= 3;
+                        for (int k = 0; k < 3; k++)
+                        img(i,j,k) = (avg *( i , j ,k ));
+                        for (int k = 0; k < 3; k++) {
+                            img(i,j,0) = min(255,(i + 100, j +100));
+                            img(i,j,1) = max(0,(i - 100, j -100));
+                            img(i,j,2) = max(0,(i - 100, j -100));
+                        }
+
+                    }
+                }
             }
-    };
-
-    class Square : public Shape
-    {
-     private:
-        int side;
-    public:
-       Square (){}
-       Square(string c,int s) : Shape(c){
-           side = s;
-       }
-        int getareasq(int s) {
-           return s*s;
-       }
-
-
-    };
-
-
-    class Rectangle : public Shape {
-    private:
-        int length;
-        int width;
-    public:
-        Rectangle() {
-
-        }
-        Rectangle(string c, int l,int w) :Shape(c) {
-            length = l;
-            width = w;
-
-        }
-        int getarearec(int l , int w) {
-            return l*w;
-        }
-    };
-
-int main() {
-    Shape s;
-    Square squ;
-    Rectangle r;
-
-    cout<< squ.getareasq(8)<< endl;
-    cout << r.getarearec(5,8) << endl;
-
+            case 11: {
+                continueProgram = false;
+                break;
+            }
+            default:
+                cout << "Invalid choice." << endl;
+                break;}
+    }
 }
