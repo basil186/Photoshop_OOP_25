@@ -2,22 +2,24 @@
 // an image editor program that is capable of applying some filters to the given images using the attached libraries
 //it can handle process edit and save the image
 // The filters are
-//    1. Invert colors
+//    1. Invert Image
 //    2. Darken or Lighten
 //    3. Convert to Black & White
 //    4. Convert to Grayscale
 //    5. Flip (Horizontal or Vertical)
 //    6. Rotate (90, 180, 270 degrees)
-//    7.merged
-//    8.crop
-//    9.Add frame
-//    10.Rsize
+//    7.Merge Image
+//    8.Crop Image
+//    9.Add Frame
+//    10.Resize Image
 //    11.Detect Image Edges
+//    12.Sunlight Wano
+//    13.Purple Wano
 //
 //    students info and their filters
 //      Name:               ID:                Sec:                    Filters done:
-//Basil HossamEldin Adham   20230545           sec(x)                  (1,3,4)
-//Mohamed Abdelaziz Mohamed 20231246           sec(x)                  (2,5,7,8,10)
+//Basil HossamEldin Adham   20230545           sec(x)                  (1,3,4,9)
+//Mohamed Abdelaziz Mohamed 20231246           sec(x)                  (2,5,7,8)
 //Hossam Anwar Alsayed      20227032           sec(x)                   (6)
 
 
@@ -48,11 +50,13 @@ int main () {
         cout << "7:Merge Image\n";
         cout << "8:Crop Image\n";
         cout << "9:Add Frame\n";
-        cout << "10:Resize\n";
-        cout << "11:Infrared Wano\n";
-        cout << "12:Purple Wano\n";
-        cout << "13:exit\n";
-        cout << "Enter choice (1-12)";
+        cout << "10:Resize Image\n";
+        cout << "11:Detect Image Edges\n";
+        cout << "12:Blur Image\n";
+        cout << "13:Sunlight Wano\n";
+        cout << "14:Purple Wano\n";
+        cout << "15:exit\n";
+        cout << "Enter choice (1-15)";
         cin >> choice;
 
         switch (choice) {
@@ -279,39 +283,39 @@ int main () {
 
                 break;
             }
-                case 7: { // Merge
+            case 7: { // Merge
                 Image img(filename);
                 cout << "Image successfully loaded\n" << endl;
-                    string filename2;
-                    cout << "Please enter the second image name with extension: ";
-                    cin >> filename2;
+                string filename2;
+                cout << "Please enter the second image name with extension: ";
+                cin >> filename2;
 
-                    Image img2(filename2);
-                    if (img2.width == 0) {
-                        cout << "Could not load the second image.\n";
-                        break;
-                    }
-
-
-                    int width = min(img.width, img2.width);
-                    int height = min(img.height, img2.height);
+                Image img2(filename2);
+                if (img2.width == 0) {
+                    cout << "Could not load the second image.\n";
+                    break;
+                }
 
 
-                    for (int i = 0; i < width; ++i) {
-                        for (int j = 0; j < height; ++j) {
-                            for (int k = 0; k < 3; ++k) {
-                                img(i, j, k) = (img(i, j, k) + img2(i, j, k)) / 2;
-                            }
+                int width = min(img.width, img2.width);
+                int height = min(img.height, img2.height);
+
+
+                for (int i = 0; i < width; ++i) {
+                    for (int j = 0; j < height; ++j) {
+                        for (int k = 0; k < 3; ++k) {
+                            img(i, j, k) = (img(i, j, k) + img2(i, j, k)) / 2;
                         }
                     }
-                    cout << "Merge filter applied.\n";
+                }
+                cout << "Merge filter applied.\n";
                 cout << "Please enter the image name to store the new image\n";
                 cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
                 cin >> filename;
                 img.saveImage(filename);
                 break;
-                }
-                case 8: {
+            }
+            case 8: {
                 //crop
                 Image img(filename);
                 cout << "loaded successfully" << endl;
@@ -352,7 +356,7 @@ int main () {
                 for (int i = 0; i < img.width; i++) {
                     for (int j = 0; j < img.height; j++) {
                         for (int k = 0; k < 3; ++k) {
-                                frame(i + 75 , j +75 ,k) =  img(i,j,k);
+                            frame(i + 75 , j +75 ,k) =  img(i,j,k);
                         };
 
 
@@ -429,33 +433,68 @@ int main () {
                 }
 
             }
-
             case 12: {
-                //Infrared Wano
+                // blur
+                Image img(filename);
+                cout << "Loaded successfully." << endl;
+                    int radius = 5;
+                Image blur(img.width, img.height);
+                Image half_blur(img.width, img.height);
 
-                //--------------- increase redtones and reduce whites basil
+                cout <<"applying horizontal blur"<< endl;
+
+                //1st half horizontal blur
+
+                for (int i = 0; i < img.width; ++i) {
+                    for (int j = 0; j < img.height; ++j) {
+                        for (int k = 0; k < 3; ++k) {
+                            int sum = 0;
+                            int count = 0;
+
+                            for (int offseti = 0; -offseti <= radius; offseti++) {
+
+                                for (int offsetj = 0; -offsetj <= radius; offsetj++) {
+
+                                    int newi = i + offseti;
+                                    int newj = j + offsetj;
+
+                                    if (newi >= 0 && newi < img.width && newj >= 0 && newj < img.height) {
+                                        sum += img(newi,newj,k);
+                                        count++;
+                                    }
+                                }
+                            }
+                            blur(i,j,k) = sum / count;
+                        }
+                    }
+                }
+                cout << "Blur applied successfully\n";
+                cout << "Please enter the image name to store the new image\n";
+                cout << "and specify the extension (.jpg, .bmp, .png, .tga): ";
+                cin >> filename;
+                blur.saveImage(filename);
+                break;
+            }
+
+            case 13: {
+                //Sunlight Wano
+
                 Image img(filename);
                 cout << "loaded successfully" << endl;
 
-                for (int i = 0; i < img.width; i++ ) {
-                    for (int j = 0; j < img.height; j++ ) {
-                        int r = img(i,j,0);
-                        int g = img (i,j,1);
-                        int b = img(i,j,2);
+                for (int i = 0; i < img.width; i++) {
+                    for (int j = 0; j < img.height; j++) {
 
-                        int infrared = min(255, (int)(r * 0.9 + g * 2.3 + b * 0.08));
+                        // Boost red and green, reduce blue to get the warmth
 
-                        // Boost bright areas, darken shadows
-                        if (infrared > 140) {
-                            infrared = min(255, infrared + 50);
-                        } else if (infrared < 70) {
-                            infrared = max(0, infrared - 35);
-                        }
+                        img(i, j, 0) = min(255, img(i, j, 0) + 40);
+                        //Increase red
 
-                        img(i, j, 0) = infrared;
-                        img(i, j, 1) = max(0, infrared - 90);
-                        img(i, j, 2) = max(0, infrared - 130);
+                        img(i, j, 1) = min(255, img(i, j, 1) + 30);
+                        //Increase green to add warmth (yellowish look)
 
+                        img(i, j, 2) = max(0, img(i, j, 2) - 60);
+                        // Decrease blue
                     }
                 }
                 cout << "Please enter the image name to store the new image\n";
@@ -465,12 +504,16 @@ int main () {
                 break;
             }
 
-            case 13: {
+            case 14: {
                 // Purple Wano
+
                 Image img(filename);
                 for (int i = 0; i < img.width; i++ ) {
                     for (int j = 0; j < img.height; j++ ) {
 
+                        // to get purple look increase red and blue and tune down green
+
+                        // Boost Red
                         img(i, j, 0) = min(255, img(i, j, 0) + 30);
 
                         // Reduce Green (k=1)
@@ -491,7 +534,7 @@ int main () {
                 img.saveImage(filename);
                 break;
             }
-            case 14: {
+            case 15: {
                 continueProgram = false;
                 break;
             }
@@ -499,4 +542,4 @@ int main () {
                 cout << "Invalid choice." << endl;
                 break;}
     }
-}
+    }
